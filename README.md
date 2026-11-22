@@ -34,4 +34,20 @@ TODO
 ## How to validate it
 Whether you just completed the build as provided by this repo or you just customized the source code, this section will provide the necessary steps to determine whether the resulting firmware was assembled properly.
 
-TODO
+1. Verify ELF memory map
+    1. Dump the elf file with `arm-none-eabi-objdump -hSD boot.elf > boot.dump`
+    2. Open boot.dump with a text editor
+    3. Find the .text section
+    4. Verify that the size is 0x100, the VMA is 0x20041f00 and the LMA is 0x10000000
+    5. Find the boot symbol
+    6. Verify that the address is 0x20041f00
+    7. Find the crc symbol
+    8. Verify that the address is 0x20041ffc
+2. Verify UF2
+    1. Open a UF2 viewer ([suggested](https://uf2viewer.embeddedlog.com/))
+    2. Load boot.uf2
+    3. Verify that only one 512-byte block is present
+    4. Verify that the block address is 0x10000000
+    5. Verify that the last 4 bytes of the payload are the 4 numbers of the CRC written in the same order as in the crc.cpp file
+
+Passing these checks does not guarantee that the bootloader will work as expected. These tests are needed to weed out the most common compilation and linking errors.
